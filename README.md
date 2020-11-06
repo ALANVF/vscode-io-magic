@@ -3,7 +3,7 @@
 High-quality syntax highlighting for the Io programming language.
 
 
-![screenshot](./assets/example.png)
+![screenshot](https://raw.githubusercontent.com/ALANVF/vscode-io-magic/master/assets/example.png)
 
 ## Contributing
 
