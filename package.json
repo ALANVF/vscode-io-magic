@@ -4,6 +4,10 @@
 	"description": "High-quality syntax highlighting for the Io programming language",
 	"version": "0.1.0",
 	"publisher": "theangryepicbanana",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ALANVF/vscode-io-magic.git"
+	},
 	"engines": {
 		"vscode": "^1.30.0"
 	},
@@ -36,7 +40,7 @@
 	"scripts": {
 		"compile-syntax": "reon-convert to-json syntaxes/io.reon"
 	},
-	"dependencies": {
+	"devDependencies": {
 		"reon-convert": "^0.1.8"
 	}
 }
