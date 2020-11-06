@@ -1,0 +1,355 @@
+{
+	"name": "Io programming language",
+	"scopeName": "source.io",
+	"fileTypes": ["io"],
+	"patterns": [
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#delim"
+		},
+		{
+			"include": "#literal"
+		},
+		{
+			"include": "#expr"
+		},
+		{
+			"include": "#operator"
+		},
+		{
+			"include": "#ident"
+		},
+		{
+			"include": "#comma"
+		}
+	],
+	"repository": {
+		"paren": {
+			"begin": "\\(",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.section.paren.begin.io"
+				}
+			},
+			"end": "\\)",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.section.paren.end.io"
+				}
+			},
+			"patterns": [
+				{
+					"include": "$self"
+				}
+			]
+		},
+		"bracket": {
+			"begin": "\\(",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.section.bracket.begin.io"
+				}
+			},
+			"end": "\\)",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.section.bracket.end.io"
+				}
+			},
+			"patterns": [
+				{
+					"include": "$self"
+				}
+			]
+		},
+		"brace": {
+			"begin": "\\(",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.section.brace.begin.io"
+				}
+			},
+			"end": "\\)",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.section.brace.end.io"
+				}
+			},
+			"patterns": [
+				{
+					"include": "$self"
+				}
+			]
+		},
+		"delim": {
+			"patterns": [
+				{
+					"include": "#paren"
+				},
+				{
+					"include": "#bracket"
+				},
+				{
+					"include": "#brace"
+				}
+			]
+		},
+		"comments.line": {
+			"match": "(?://|#).*$",
+			"name": "comment.line.semicolon.io"
+		},
+		"comments.multiline": {
+			"begin": "/\\*",
+			"end": "\\*/",
+			"name": "comment.block.io"
+		},
+		"comments": {
+			"patterns": [
+				{
+					"include": "#comments.line"
+				},
+				{
+					"include": "#comments.multiline"
+				}
+			]
+		},
+		"space": {
+			"match": "\\s+",
+			"name": "text.io"
+		},
+		"empty": {
+			"patterns": [
+				{
+					"include": "#space"
+				},
+				{
+					"include": "#comments"
+				}
+			]
+		},
+		"comma": {
+			"match": ",",
+			"name": "punctuation.separator.comma.io"
+		},
+		"constant": {
+			"match": "\\b(?<![\\w.]|[\\w.]:+)(true|false|nil|self|call|this(?:(?:Local)?Context|Message)|stopStatus)(?![:.])(?=\\b)",
+			"name": "constant.language.io"
+		},
+		"literal.string.escape": {
+			"match": "\\\\.",
+			"name": "constant.character.io"
+		},
+		"literal.string.quoted": {
+			"begin": "\"",
+			"end": "\"",
+			"name": "string.io",
+			"patterns": [
+				{
+					"include": "#literal.string.escape"
+				}
+			]
+		},
+		"literal.string.multiline": {
+			"begin": "\"\"\"",
+			"end": "\"\"\"(?!\")",
+			"name": "string.io",
+			"patterns": []
+		},
+		"literal.string": {
+			"patterns": [
+				{
+					"include": "#literal.string.quoted"
+				},
+				{
+					"include": "#literal.string.multiline"
+				}
+			]
+		},
+		"literal.number": {
+			"match": "([+-]|\\b)(\\d+(?:\\.\\d+|(?!\\.\\D))|\\.\\d+)([eE]-?\\d+)?\\b",
+			"name": "constant.numeric.io"
+		},
+		"literal.hex": {
+			"match": "\\b0[xX]\\h+\\b",
+			"name": "constant.numeric.hex.io"
+		},
+		"literal": {
+			"patterns": [
+				{
+					"include": "#literal.number"
+				},
+				{
+					"include": "#literal.hex"
+				},
+				{
+					"include": "#literal.string"
+				},
+				{
+					"include": "#constant"
+				}
+			]
+		},
+		"type": {
+			"match": "\\b([A-Z][\\w:.]*)(?:(?<=\\w)\\b|(?<=[:.]))",
+			"name": "entity.name.type.io"
+		},
+		"operator": {
+			"patterns": [
+				{
+					"match": "(?x)(?<![:'~!@$%^&*\\-+/=|\\\\<>?])(?:\n\t\t\t\t\t\t\t  ::= | := | =\n\t\t\t\t\t\t\t| [=!><]= | [><]\n\t\t\t\t\t\t\t| [+\\-/%&|^] | \\*{1,2} | << | >>\n\t\t\t\t\t\t\t| [+\\-*/%&|^]= | <<= | >>=\n\t\t\t\t\t\t)(?![:'~!@$%^&*\\-+/=|\\\\<>?])",
+					"name": "keyword.io"
+				},
+				{
+					"match": "(?<![\\w.]|[\\w.]:+)\\.{2}(?![\\w:.])",
+					"name": "keyword.io"
+				},
+				{
+					"match": "(?<![\\w.]|[\\w.]:+)\\.+(?![\\w:.])",
+					"name": "entity.name.function.io"
+				},
+				{
+					"match": "[:'~!@$%^&*\\-+/=|\\\\<>?]+",
+					"name": "entity.name.function.io"
+				}
+			]
+		},
+		"base-keywords": {
+			"patterns": [
+				{
+					"match": "(?x)\\b(?<![\\w.]|[\\w.]:+)(?:\n\t\t\t\t\t\tbreak\n\t\t\t\t\t\t|return\n\t\t\t\t\t\t|continue|clone\n\t\t\t\t\t\t|resend\n\t\t\t\t\t\t|yield\n\t\t\t\t\t\t|returnIfNonNil\n\t\t\t\t\t\t|clone|cloneWithoutInit\n\t\t\t\t\t\t|shallowCopy\n\t\t\t\t\t\t|write|writeln\n\t\t\t\t\t\t|pass\n\t\t\t\t\t\t|isNil\n\t\t\t\t\t\t|and\n\t\t\t\t\t\t|catch\n\t\t\t\t\t\t|if(?:\n\t\t\t\t\t\t\tTrue\n\t\t\t\t\t\t\t|False\n\t\t\t\t\t\t\t|(?:\n\t\t\t\t\t\t\t\t(?:Non)?\n\t\t\t\t\t\t\t\tNil\n\t\t\t\t\t\t\t\t(?:Eval)?\n\t\t\t\t\t\t\t)\n\t\t\t\t\t\t\t|isKindOf\n\t\t\t\t\t\t)\n\t\t\t\t\t\t|list|loop\n\t\t\t\t\t\t|or\n\t\t\t\t\t\t|raise|repeat\n\t\t\t\t\t\t|super\n\t\t\t\t\t\t|while\n\t\t\t\t\t\t|get(?:Local)?Slot\n\t\t\t\t\t\t|has(?:Local)?Slot\n\t\t\t\t\t\t|newSlot\n\t\t\t\t\t\t|setSlot(?:WithType)?\n\t\t\t\t\t\t|updateSlot\n\t\t\t\t\t\t|removeSlot|removeAllSlots\n\t\t\t\t\t\t|(?:set|append|prepend|remove|has)Proto\n\t\t\t\t\t\t|setProtos|removeAllProtos\n\t\t\t\t\t\t|try\n\t\t\t\t\t\t|compare\n\t\t\t\t\t\t|isIdenticalTo\n\t\t\t\t\t\t|become\n\t\t\t\t\t\t|setIsActivatable|isActivatable\n\t\t\t\t\t\t|argIsActivationRecord|argIsCall\n\t\t\t\t\t\t|init|forward\n\t\t\t\t\t\t|ownsSlots\n\t\t\t\t\t\t|memorySize\n\t\t\t\t\t\t|hasDirtySlot\n\t\t\t\t\t\t|markClean\n\t\t\t\t\t\t|do(?:Message|String|(?:Relative)?File|URL)?\n\t\t\t\t\t\t|for(?:each(?:Slot)?)?\n\t\t\t\t\t\t|message\n\t\t\t\t\t\t|lexicalDo\n\t\t\t\t\t\t|evalArg(?:AndReturn(?:Self|Nil))?\n\t\t\t\t\t\t|perform(?:WithArgList)?\n\t\t\t\t\t\t|(?:ancestor|context)WithSlot\n\t\t\t\t\t\t|as(?:(?:Simple)?String|Boolean)\n\t\t\t\t\t\t|write(?:ln)?\n\t\t\t\t\t\t\n\t\t\t\t\t\t|tailCall\n\t\t\t\t\t\t|switch\n\t\t\t\t\t\t|uniqueHexId\n\t\t\t\t\t\t|wait\n\t\t\t\t\t\t|slot(?:Summary|DescriptionMap)\n\t\t\t\t\t\t|not\n\t\t\t\t\t\t|lazySlot\n\t\t\t\t\t\t|launchFile\n\t\t\t\t\t\t|isLaunchScript\n\t\t\t\t\t\t|inlineMethod\n\t\t\t\t\t\t|in\n\t\t\t\t\t)(?![:.])(?=\\b)",
+					"name": "keyword.io"
+				},
+				{
+					"begin": "\\b(?<![\\w.]|[\\w.]:+)(method|block)[ \\t]*(\\()",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.io"
+						},
+						"2": {
+							"name": "punctuation.section.paren.begin.io"
+						}
+					},
+					"end": "\\)",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.section.paren.end.io"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#empty"
+						},
+						{
+							"include": "#comma"
+						},
+						{
+							"match": "(?:(?<=\\b)(?<!\\.)(?:[a-z_]|\\d+\\.(?!\\d))[\\w:.]*|(?<![:'~!@$%^&*\\-+/=|\\\\<>?])\\.(?!\\.*(?![\\w:]))(?:\\.[\\w:.]+|[a-zA-Z_:][\\w:.]*|(?![:'~!@$%^&*\\-+/=|\\\\<>?\\d])))(?=\\s*,)",
+							"name": "variable.parameter.io"
+						},
+						{
+							"begin": "(?!\\s|(?:(?<=\\b)(?<!\\.)(?:[a-z_]|\\d+\\.(?!\\d))[\\w:.]*|(?<![:'~!@$%^&*\\-+/=|\\\\<>?])\\.(?!\\.*(?![\\w:]))(?:\\.[\\w:.]+|[a-zA-Z_:][\\w:.]*|(?![:'~!@$%^&*\\-+/=|\\\\<>?\\d])))\\s*,)",
+							"end": "(?=\\))",
+							"patterns": [
+								{
+									"include": "$self"
+								}
+							]
+						}
+					]
+				},
+				{
+					"begin": "\\b(?<![\\w.]|[\\w.]:+)if(?=[ \\t]*\\()",
+					"beginCaptures": {
+						"0": {
+							"name": "keyword.io"
+						}
+					},
+					"end": "(?!(?:then|elseif|else)(?=[ \\t]*\\()|\\(|\\s+)|(?=[,;]|$)",
+					"patterns": [
+						{
+							"include": "#paren"
+						},
+						{
+							"match": "\\b(?<![\\w.]|[\\w.]:+)(then|elseif|else)(?=[ \\t]*\\()",
+							"name": "keyword.io"
+						},
+						{
+							"include": "#expr"
+						}
+					]
+				}
+			]
+		},
+		"suffix": {
+			"match": "(?<=[\\w)\\]}\"]\\s+)(?<!\\breturn\\s+|\\band\\s+|\\bor\\s+)((?:\\?|@{1,2})?)((?<=\\b)(?<!\\.)(?:[a-z_]|\\d+\\.(?!\\d))[\\w:.]*|(?<![:'~!@$%^&*\\-+/=|\\\\<>?])\\.(?!\\.*(?![\\w:]))(?:\\.[\\w:.]+|[a-zA-Z_:][\\w:.]*|(?![:'~!@$%^&*\\-+/=|\\\\<>?\\d])))(?![ \\t]*\\(|[ \\t]+:{0,2}=[^=])(?:(?<=\\w)\\b|(?<=[:.]))",
+			"captures": {
+				"1": {
+					"name": "keyword.io"
+				},
+				"2": {
+					"patterns": [
+						{
+							"match": "(?x)(?<=^:*call\\s+|[^:.]\\bcall\\s+|[^\\w.:]:+call\\s+)(?:\n\t\t\t\t\t\t\t\t\tactivated\n\t\t\t\t\t\t\t\t\t|message\n\t\t\t\t\t\t\t\t\t|sender|slotContext\n\t\t\t\t\t\t\t\t\t|target\n\t\t\t\t\t\t\t\t)(?![:.])(?=\\b)",
+							"name": "variable.io"
+						},
+						{
+							"match": "(?x)\\b(?:\n\t\t\t\t\t\t\t\tcode\n\t\t\t\t\t\t\t\t|protos?\n\t\t\t\t\t\t\t\t|slot(?:Names|Values)\n\t\t\t\t\t\t\t\t|type\n\t\t\t\t\t\t\t\t|ancestors\n\t\t\t\t\t\t\t\t|uniqueId\n\t\t\t\t\t\t\t)(?![:.])(?=\\b)",
+							"name": "variable.io"
+						},
+						{
+							"match": "[\\w:.]+",
+							"name": "entity.name.function.io"
+						}
+					]
+				}
+			}
+		},
+		"assign-method": {
+			"match": "(?:(?:(?<=\\b)(?<!\\.)(?:[a-z_]|\\d+\\.(?!\\d))[\\w:.]*|(?<![:'~!@$%^&*\\-+/=|\\\\<>?])\\.(?!\\.*(?![\\w:]))(?:\\.[\\w:.]+|[a-zA-Z_:][\\w:.]*|(?![:'~!@$%^&*\\-+/=|\\\\<>?\\d])))|[:'~!@$%^&*\\-+/=|\\\\<>?]+)(?=\\s+:{0,2}=\\s*method[ \\t]*\\()",
+			"name": "entity.name.function.io"
+		},
+		"assign": {
+			"match": "(?:(?:(?<=\\b)(?<!\\.)(?:[a-z_]|\\d+\\.(?!\\d))[\\w:.]*|(?<![:'~!@$%^&*\\-+/=|\\\\<>?])\\.(?!\\.*(?![\\w:]))(?:\\.[\\w:.]+|[a-zA-Z_:][\\w:.]*|(?![:'~!@$%^&*\\-+/=|\\\\<>?\\d])))|[:'~!@$%^&*\\-+/=|\\\\<>?]+)(?=\\s+:{0,2}=[^=])",
+			"name": "variable.io"
+		},
+		"call": {
+			"match": "((?:\\?|@{1,2})?)((?<=\\b)(?<!\\.)(?:[a-z_]|\\d+\\.(?!\\d))[\\w:.]*|(?<![:'~!@$%^&*\\-+/=|\\\\<>?])\\.(?!\\.*(?![\\w:]))(?:\\.[\\w:.]+|[a-zA-Z_:][\\w:.]*|(?![:'~!@$%^&*\\-+/=|\\\\<>?\\d])))(?=[ \\t]*\\()",
+			"captures": {
+				"1": {
+					"name": "keyword.io"
+				},
+				"2": {
+					"name": "entity.name.function.io"
+				}
+			}
+		},
+		"expr": {
+			"patterns": [
+				{
+					"include": "#type"
+				},
+				{
+					"include": "#base-keywords"
+				},
+				{
+					"include": "#call"
+				},
+				{
+					"include": "#suffix"
+				},
+				{
+					"include": "#assign-method"
+				},
+				{
+					"include": "#assign"
+				}
+			]
+		},
+		"ident": {
+			"match": "(?:(?<=\\b)(?<!\\.)(?:[a-z_]|\\d+\\.(?!\\d))[\\w:.]*|(?<![:'~!@$%^&*\\-+/=|\\\\<>?])\\.(?!\\.*(?![\\w:]))(?:\\.[\\w:.]+|[a-zA-Z_:][\\w:.]*|(?![:'~!@$%^&*\\-+/=|\\\\<>?\\d])))(?:(?<=\\w)\\b|(?<=[:.]))",
+			"name": "identifier.io"
+		}
+	}
+}

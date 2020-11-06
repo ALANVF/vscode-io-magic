@@ -1,0 +1,42 @@
+{
+	"name": "language-io",
+	"displayName": "Io magic",
+	"description": "High-quality syntax highlighting for the Io programming language",
+	"version": "0.1.0",
+	"publisher": "theangryepicbanana",
+	"engines": {
+		"vscode": "^1.30.0"
+	},
+	"categories": [
+		"Programming Languages",
+		"Other"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "io",
+				"aliases": [
+					"Io",
+					"io"
+				],
+				"extensions": [
+					".io"
+				],
+				"configuration": "./io.configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "io",
+				"scopeName": "source.io",
+				"path": "./syntaxes/io.json"
+			}
+		]
+	},
+	"scripts": {
+		"compile-syntax": "reon-convert to-json syntaxes/io.reon"
+	},
+	"dependencies": {
+		"reon-convert": "^0.1.8"
+	}
+}

@@ -1,0 +1,495 @@
+reduce: macro [values res:][
+	res: copy []
+	
+	while [not same? 0 length? values][
+		append res do.next values 'values
+	]
+
+	return res
+]
+
+cojoin: macro [values][
+	res: copy ""
+
+	foreach value compose values [
+		append res form value
+	]
+
+	return res
+]
+
+rejoin: macro [values res:][
+	res: copy ""
+
+	foreach value reduce values [
+		append res form value
+	]
+
+	return res
+]
+
+without-char: macro [string needle res:][
+	res: copy ""
+
+	foreach char string [
+		if not same? char needle [
+			append res char
+		]
+	]
+
+	return res
+]
+
+_op-char: ":'~!@$%^^&*\-+/=|\\<>?"
+
+op-char: rejoin ["[" _op-char "]"]
+
+op-chars: rejoin [op-char "+"]
+
+_ident: rejoin [
+	"(?<=\b)(?<!\.)" "(?:"
+		"[a-z_]"
+		"|"
+		"\d+\.(?!\d)"
+	")" "[\w:.]*"
+	"|"
+	"(?<!" op-char ")" "\.(?!\.*(?![\w:]))" "(?:"
+		"\.[\w:.]+"
+		"|"
+		"[a-zA-Z_:][\w:.]*"
+		"|"
+		"(?!" rejoin ["[" _op-char "\d" "]"] ")"
+	")"
+]
+
+ident: rejoin ["(?:" _ident ")"]
+
+ident-end: "(?:(?<=\w)\b|(?<=[:.]))"
+
+no-ident-begin: "\b(?<![\w.]|[\w.]:+)"
+no-ident-end: "(?![:.])(?=\b)"
+-ident: macro [rule][rejoin [no-ident-begin rule]]
+ident-: macro [rule][rejoin [rule no-ident-end]]
+-ident-: macro [rule][rejoin [no-ident-begin rule no-ident-end]]
+
+
+#(
+	name "Io programming language"
+	scopeName "source.io"
+	fileTypes ["io"]
+	
+	patterns [
+		#(include #comments)
+		#(include #delim)
+		#(include #literal)
+		#(include #expr)
+		#(include #operator)
+		#(include #ident)
+		#(include #comma)
+	]
+
+	repository #(
+		paren #(
+			begin "\("
+			beginCaptures #(
+				0 #(name "punctuation.section.paren.begin.io")
+			)
+			
+			end "\)"
+			endCaptures #(
+				0 #(name "punctuation.section.paren.end.io")
+			)
+
+			patterns [
+				#(include "$self")
+			]
+		)
+
+		bracket #(
+			begin "\("
+			beginCaptures #(
+				0 #(name "punctuation.section.bracket.begin.io")
+			)
+			
+			end "\)"
+			endCaptures #(
+				0 #(name "punctuation.section.bracket.end.io")
+			)
+
+			patterns [
+				#(include "$self")
+			]
+		)
+
+		brace #(
+			begin "\("
+			beginCaptures #(
+				0 #(name "punctuation.section.brace.begin.io")
+			)
+			
+			end "\)"
+			endCaptures #(
+				0 #(name "punctuation.section.brace.end.io")
+			)
+
+			patterns [
+				#(include "$self")
+			]
+		)
+
+		delim #(
+			patterns [
+				#(include #paren)
+				#(include #bracket)
+				#(include #brace)
+			]
+		)
+
+		comments.line #(
+			match "(?://|#).*$"
+			name "comment.line.semicolon.io"
+		)
+
+		comments.multiline #(
+			begin "/\*"
+			end "\*/"
+			name "comment.block.io"
+		)
+
+		comments #(
+			patterns [
+				#(include #comments.line)
+				#(include #comments.multiline)
+			]
+		)
+
+		space #(
+			match "\s+"
+			name "text.io"
+		)
+
+		empty #(
+			patterns [
+				#(include #space)
+				#(include #comments)
+			]
+		)
+
+		comma #(
+			match ","
+			name "punctuation.separator.comma.io" 
+		)
+
+		constant #(
+			match (-ident- "(true|false|nil|self|call|this(?:(?:Local)?Context|Message)|stopStatus)")
+			name "constant.language.io"
+		)
+
+		literal.string.escape #(
+			match "\\."
+			name "constant.character.io"
+		)
+		
+		literal.string.quoted #(
+			begin {"}
+			end {"}
+			name "string.io"
+			patterns [
+				#(include #literal.string.escape)
+			]
+		)
+		
+		literal.string.multiline #(
+			begin {"""}
+			end {"""(?!")}
+			name "string.io"
+			patterns [
+				;#(include #literal.string.escape)
+			]
+		)
+		
+		literal.string #(
+			patterns [
+				#(include #literal.string.quoted)
+				#(include #literal.string.multiline)
+			]
+		)
+
+		literal.number #(
+			match "([+-]|\b)(\d+(?:\.\d+|(?!\.\D))|\.\d+)([eE]-?\d+)?\b"
+			name "constant.numeric.io"
+		)
+		
+		literal.hex #(
+			match "\b0[xX]\h+\b"
+			name "constant.numeric.hex.io"
+		)
+		
+		literal #(
+			patterns [
+				#(include #literal.number)
+				#(include #literal.hex)
+				#(include #literal.string)
+				#(include #constant)
+			]
+		)
+
+		type #(
+			match (rejoin ["\b([A-Z][\w:.]*)" ident-end])
+			name "entity.name.type.io"
+		)
+
+		operator #(
+			patterns [
+				#(
+					match (rejoin [
+						"(?x)(?<!" op-char ")(?:"
+						{
+							  ::= | := | =
+							| [=!><]= | [><]
+							| [+\-/%&|^^] | \*{1,2} | << | >>
+							| [+\-*/%&|^^]= | <<= | >>=
+						}
+						")(?!" op-char ")"
+					])
+					name "keyword.io"
+				)
+				#(
+					match "(?<![\w.]|[\w.]:+)\.{2}(?![\w:.])"
+					name "keyword.io"
+				)
+				#(
+					match "(?<![\w.]|[\w.]:+)\.+(?![\w:.])"
+					name "entity.name.function.io"
+				)
+				#(
+					match (op-chars)
+					name "entity.name.function.io"
+				)
+			]
+		)
+
+		base-keywords #(
+			patterns [
+				#(
+					match (append "(?x)" -ident- {(?:
+						break
+						|return
+						|continue|clone
+						|resend
+						|yield
+						|returnIfNonNil
+						|clone|cloneWithoutInit
+						|shallowCopy
+						|write|writeln
+						|pass
+						|isNil
+						|and
+						|catch
+						|if(?:
+							True
+							|False
+							|(?:
+								(?:Non)?
+								Nil
+								(?:Eval)?
+							)
+							|isKindOf
+						)
+						|list|loop
+						|or
+						|raise|repeat
+						|super
+						|while
+						|get(?:Local)?Slot
+						|has(?:Local)?Slot
+						|newSlot
+						|setSlot(?:WithType)?
+						|updateSlot
+						|removeSlot|removeAllSlots
+						|(?:set|append|prepend|remove|has)Proto
+						|setProtos|removeAllProtos
+						|try
+						|compare
+						|isIdenticalTo
+						|become
+						|setIsActivatable|isActivatable
+						|argIsActivationRecord|argIsCall
+						|init|forward
+						|ownsSlots
+						|memorySize
+						|hasDirtySlot
+						|markClean
+						|do(?:Message|String|(?:Relative)?File|URL)?
+						|for(?:each(?:Slot)?)?
+						|message
+						|lexicalDo
+						|evalArg(?:AndReturn(?:Self|Nil))?
+						|perform(?:WithArgList)?
+						|(?:ancestor|context)WithSlot
+						|as(?:(?:Simple)?String|Boolean)
+						|write(?:ln)?
+						
+						|tailCall
+						|switch
+						|uniqueHexId
+						|wait
+						|slot(?:Summary|DescriptionMap)
+						|not
+						|lazySlot
+						|launchFile
+						|isLaunchScript
+						|inlineMethod
+						|in
+					)})
+					name "keyword.io"
+				)
+				#(
+					begin (-ident "(method|block)[ \t]*(\()")
+					beginCaptures #(
+						1 #(name "keyword.io")
+						2 #(name "punctuation.section.paren.begin.io")
+					)
+
+					end "\)"
+					endCaptures #(
+						0 #(name "punctuation.section.paren.end.io")
+					)
+
+					patterns [
+						#(include #empty)
+						#(include #comma)
+						#(
+							match (rejoin [ident "(?=\s*,)"])
+							name "variable.parameter.io"
+						)
+						#(
+							begin (rejoin ["(?!\s|" ident "\s*,)"])
+							end "(?=\))"
+							patterns [
+								#(include "$self")
+							]
+						)
+					]
+				)
+				#(
+					begin (-ident "if(?=[ \t]*\()")
+					beginCaptures #(
+						0 #(name "keyword.io")
+					)
+
+					end "(?!(?:then|elseif|else)(?=[ \t]*\()|\(|\s+)|(?=[,;]|$)"
+
+					patterns [
+						#(include #paren)
+						#(
+							match (-ident "(then|elseif|else)(?=[ \t]*\()")
+							name "keyword.io"
+						)
+						#(include #expr)
+					]
+				)
+			]
+		)
+
+		suffix #(
+			match (rejoin [
+				{(?<=[\w)\]^}"]\s+)}
+				"(?<!\breturn\s+|\band\s+|\bor\s+)" ;@@ TODO: fix
+				"((?:\?|@{1,2})?)"
+				"(" _ident ")"
+				"(?!"
+					"[ \t]*\("
+					"|"
+					"[ \t]+:{0,2}=[^^=]"
+				")" ident-end
+			])
+			captures #(
+				1 #(name "keyword.io")
+				2 #(
+					patterns [
+						#(
+							match (
+								ident- {(?x)(?<=^^:*call\s+|[^^:.]\bcall\s+|[^^\w.:]:+call\s+)(?:
+									activated
+									|message
+									|sender|slotContext
+									|target
+								)}
+							)
+							name "variable.io"
+						)
+						#(
+							match (ident- {(?x)\b(?:
+								code
+								|protos?
+								|slot(?:Names|Values)
+								|type
+								|ancestors
+								|uniqueId
+							)})
+							name "variable.io"
+						)
+						#(
+							match "[\w:.]+"
+							name "entity.name.function.io"
+						)
+					]
+				)
+			)
+		)
+
+		assign-method #(
+			match (rejoin [
+				"(?:"
+					ident
+					"|"
+					op-chars
+				")"
+				"(?=\s+:{0,2}=\s*method[ \t]*\()"
+			])
+			name "entity.name.function.io"
+		)
+
+		assign #(
+			match (rejoin [
+				"(?:"
+					ident
+					"|"
+					op-chars
+				")"
+				"(?=\s+:{0,2}=[^^=])"
+			])
+			name "variable.io"
+		)
+
+		call #(
+			;@@ TODO: add operators as well
+			match (rejoin [
+				"((?:\?|@{1,2})?)"
+				"(" _ident ")"
+				"(?=[ \t]*\()"
+			])
+			captures #(
+				1 #(name "keyword.io")
+				2 #(name "entity.name.function.io")
+			)
+		)
+
+		expr #(
+			patterns [
+				#(include #type)
+				#(include #base-keywords)
+				#(include #call)
+				#(include #suffix)
+				#(include #assign-method)
+				#(include #assign)
+			]
+		)
+
+		ident #(
+			match (rejoin [ident ident-end])
+			name "identifier.io"
+		)
+	)
+)
