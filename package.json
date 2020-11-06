@@ -8,6 +8,7 @@
 		"type": "git",
 		"url": "https://github.com/ALANVF/vscode-io-magic.git"
 	},
+	"license": "MIT",
 	"engines": {
 		"vscode": "^1.30.0"
 	},
