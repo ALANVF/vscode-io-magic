@@ -281,7 +281,7 @@ ident-: macro [rule][rejoin [rule no-ident-end]]
 						|returnIfNonNil
 						|clone|cloneWithoutInit
 						|shallowCopy
-						|write|writeln
+						|write(?:ln)?
 						|pass
 						|isNil
 						|and
@@ -328,7 +328,7 @@ ident-: macro [rule][rejoin [rule no-ident-end]]
 						|perform(?:WithArgList)?
 						|(?:ancestor|context)WithSlot
 						|as(?:(?:Simple)?String|Boolean)
-						|write(?:ln)?
+						|print(?:ln)?
 						
 						|tailCall
 						|switch

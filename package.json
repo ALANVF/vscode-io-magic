@@ -2,7 +2,7 @@
 	"name": "language-io",
 	"displayName": "Io magic",
 	"description": "High-quality syntax highlighting for the Io programming language",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"publisher": "theangryepicbanana",
 	"repository": {
 		"type": "git",
